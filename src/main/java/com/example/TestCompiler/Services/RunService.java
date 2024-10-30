@@ -93,7 +93,7 @@ public class RunService {
 
     private File saveToFile(String fileName, String content) throws IOException {
         // Specify the base directory path explicitly, for example, using "Documents/docker_code_submissions"
-        Path baseDir = Paths.get(System.getProperty("user.home"), "Documents", "docker_code_submissions");
+        Path baseDir = Paths.get(System.getProperty("user.home"), "ubuntu", "docker_code_submissions");
         Files.createDirectories(baseDir); // Ensure the base directory exists
 
         Path tempDir = Files.createTempDirectory(baseDir, "code_submission");
