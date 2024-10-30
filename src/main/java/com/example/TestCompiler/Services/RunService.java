@@ -104,6 +104,9 @@ public class RunService {
         try (FileWriter writer = new FileWriter(file)) {
             writer.write(content);
         }
+        catch (Exception e){
+            System.out.printf("Error occured"+e.toString());
+        }
         return file;
     }
     private String getContainerLogs(DockerClient dockerClient, String containerId) {
