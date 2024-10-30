@@ -16,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 @Service
@@ -59,13 +60,12 @@ public class RunService {
         try {
             // Save code and input test cases to files
             codeFile = saveToFile(codeFileName, code);
-            inputFile = saveToFile(inputFileName, testCases);
+
 
             // Create HostConfig with binds for code and input files
             HostConfig hostConfig = HostConfig.newHostConfig()
                     .withBinds(
-                            Bind.parse(codeFile.getAbsolutePath() + ":/app/" + codeFileName),
-                            Bind.parse(inputFile.getAbsolutePath() + ":/app/" + inputFileName)
+                            Bind.parse(codeFile.getAbsolutePath() + ":/app/" + codeFileName)
                     );
 
             // Create and start the container
@@ -88,26 +88,24 @@ public class RunService {
         } catch (Exception e) {
             e.printStackTrace();
             return "Error executing code: " + e.getMessage();
-        } finally {
-            // Clean up the temporary files
-            if (codeFile != null && codeFile.exists()) {
-                codeFile.delete();
-            }
-            if (inputFile != null && inputFile.exists()) {
-                inputFile.delete();
-            }
         }
     }
 
     private File saveToFile(String fileName, String content) throws IOException {
-        Path filePath = Files.createTempDirectory("code_submission").resolve(fileName);
+        // Specify the base directory path explicitly, for example, using "Documents/docker_code_submissions"
+        Path baseDir = Paths.get(System.getProperty("user.home"), "Documents", "docker_code_submissions");
+        Files.createDirectories(baseDir); // Ensure the base directory exists
+
+        Path tempDir = Files.createTempDirectory(baseDir, "code_submission");
+        Path filePath = tempDir.resolve(fileName);
+
+        System.out.println("file path : "+filePath);
         File file = filePath.toFile();
         try (FileWriter writer = new FileWriter(file)) {
             writer.write(content);
         }
         return file;
     }
-
     private String getContainerLogs(DockerClient dockerClient, String containerId) {
         StringBuilder logBuilder = new StringBuilder();
         try {
